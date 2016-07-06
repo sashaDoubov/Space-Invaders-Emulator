@@ -17,7 +17,7 @@ Insert Coin: 'c'
 	Left:	Left Arrow		Left:	'a'
 	Right:	Right Arrow		Right:	'd'
 
-This project was inspired by the http://emulator101.com/,
+This project was inspired by  http://emulator101.com/,
 an amazing resource! 
 
 There are major differences, as that code was designed for Mac,
