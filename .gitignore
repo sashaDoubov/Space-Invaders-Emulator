@@ -243,3 +243,7 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/Space Invaders-Emulator/Rom Files/invaders.e
+/Space Invaders-Emulator/Rom Files/invaders.f
+/Space Invaders-Emulator/Rom Files/invaders.g
+/Space Invaders-Emulator/Rom Files/invaders.h
