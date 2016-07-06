@@ -1,4 +1,4 @@
-// Dissassembler.cpp : Defines the entry point for the console application.
+// main.cpp : Defines the entry point for the console application.
 
 //local includes
 #include "stdafx.h"
