@@ -2,8 +2,8 @@
 Space Invaders-Emulator Project Overview
 ========================================================================
 
-This project emulates the Intel 8080 processor, to play Space Invaders
-with the original ROM files!
+This project emulates the Intel 8080 processor and uses SDL2 graphics,
+to play Space Invaders with the original ROM files!
 
 Obtain your own invaders.h,invaders.g,invaders.e,invaders.f and paste
 them in the ROM files folder
@@ -11,11 +11,11 @@ them in the ROM files folder
 
 HOW TO PLAY:
 Insert Coin: 'c'
-1 Player							2 player (player 1 uses same keys)
-	Start:	'1'							Start: '2'
-	Shoot:	Space Bar					Shoot:	'w'
-	Left:	Left Arrow					Left:	'a'
-	Right:	Right Arrow					Right:	'd'
+1 Player				2 player (player 1 uses same keys)
+	Start:	'1'				Start: '2'
+	Shoot:	Space Bar		Shoot:	'w'
+	Left:	Left Arrow		Left:	'a'
+	Right:	Right Arrow		Right:	'd'
 
 This project was inspired by the http://emulator101.com/,
 an amazing resource! 
