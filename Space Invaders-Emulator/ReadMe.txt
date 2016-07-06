@@ -1,40 +1,30 @@
 ========================================================================
-    CONSOLE APPLICATION : Space Invaders-Emulator Project Overview
+Space Invaders-Emulator Project Overview
 ========================================================================
 
-AppWizard has created this Space Invaders-Emulator application for you.
+This project emulates the Intel 8080 processor, to play Space Invaders
+with the original ROM files!
 
-This file contains a summary of what you will find in each of the files that
-make up your Space Invaders-Emulator application.
+Obtain your own invaders.h,invaders.g,invaders.e,invaders.f and paste
+them in the ROM files folder
+// Due to the gray legal area in which emulators reside in
 
+HOW TO PLAY:
+Insert Coin: 'c'
+1 Player							2 player (player 1 uses same keys)
+	Start:	'1'							Start: '2'
+	Shoot:	Space Bar					Shoot:	'w'
+	Left:	Left Arrow					Left:	'a'
+	Right:	Right Arrow					Right:	'd'
 
-Space Invaders-Emulator.vcxproj
-    This is the main project file for VC++ projects generated using an Application Wizard.
-    It contains information about the version of Visual C++ that generated the file, and
-    information about the platforms, configurations, and project features selected with the
-    Application Wizard.
+This project was inspired by the http://emulator101.com/,
+an amazing resource! 
 
-Space Invaders-Emulator.vcxproj.filters
-    This is the filters file for VC++ projects generated using an Application Wizard. 
-    It contains information about the association between the files in your project 
-    and the filters. This association is used in the IDE to show grouping of files with
-    similar extensions under a specific node (for e.g. ".cpp" files are associated with the
-    "Source Files" filter).
+There are major differences, as that code was designed for Mac,
+so this one uses windows specific libraries for graphics and input
+(SDL2)
 
-Space Invaders-Emulator.cpp
-    This is the main application source file.
+This was my first emulator, so this was a learning project
+Hope you enjoy!
 
-/////////////////////////////////////////////////////////////////////////////
-Other standard files:
-
-StdAfx.h, StdAfx.cpp
-    These files are used to build a precompiled header (PCH) file
-    named Space Invaders-Emulator.pch and a precompiled types file named StdAfx.obj.
-
-/////////////////////////////////////////////////////////////////////////////
-Other notes:
-
-AppWizard uses "TODO:" comments to indicate parts of the source code you
-should add to or customize.
-
-/////////////////////////////////////////////////////////////////////////////
+(Some sort of blog post to come)
