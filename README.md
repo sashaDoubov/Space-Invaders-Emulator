@@ -24,8 +24,10 @@ Obtain your own ROM files and paste them into the ROM folder.
 ___
 	
 
-This project was inspired by  http://emulator101.com/,
-an amazing resource! 
+I would like to give credit to the http://emulator101.com/ page, which both inspired this project
+and guided me through some of the tough areas.
+
+
 
 This was my first emulator, so this was a learning project
 
