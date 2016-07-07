@@ -2,6 +2,8 @@
 #include "..\Header Files\Opcodes.h"
 #include "..\Header Files\SpaceInvadersMachine.h"
 
+
+
 /*
 Array storing the # of cycles for each opcode
 cycle8080[opcode #] = cycle time of that operation
@@ -29,9 +31,19 @@ unsigned char cycles8080[] = {
 };
 
 
+
+
+
+/*
+Main switch statement for interpreting opcodes
+
+@param state	structure emulating CPU memory
+@return		# of cycles (int) per given opcode
+
+*/
 int Emulate(State8080* state)
 {
-	int cycles = 4;
+
 	unsigned char *opcode = &state->memory[state->pc];
 	state->pc += 1;
 

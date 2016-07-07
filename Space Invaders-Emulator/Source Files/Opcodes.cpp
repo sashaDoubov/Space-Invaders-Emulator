@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "../Header Files/Opcodes.h"
 
+
+/*---------------------------------------------------------------------------*/
+
 /*STATE MACHINE FUNCTIONS*/
 
 /*Initialize State machine*/
@@ -10,6 +13,10 @@ State8080* Init8080(void)
 	state->memory = (uint8_t*)malloc(0x10000);  //16K
 	return state;
 }
+
+
+/*---------------------------------------------------------------------------*/
+
 /* UTILITY FUNCTIONS*/
 
 /* Provides a printout for each 8080 opcode*/
@@ -340,7 +347,10 @@ int Dissassemble(unsigned char *codebuffer, int pc)
 	printf("\n");
 	return opbytes;
 }
-/* Prints the current status of the emulator*/
+
+
+
+/* Prints the current status of the emulator (useful for debugging)*/
 void PrintStatus(State8080* state) {
 	printf("\n");
 	printf("\t");
@@ -353,7 +363,13 @@ void PrintStatus(State8080* state) {
 		state->d, state->e, state->h, state->l, state->sp);
 	printf("pc %04x\n", state->pc);
 }
-/*Reads the file with an optional offset in memory*/
+
+
+
+/*
+Reads the file with an optional offset in memory
+(from Emulator 101)
+*/
 void ReadFileIntoMemoryAt(State8080* state, char* filename, uint32_t offset)
 {
 	FILE *f = fopen(filename, "rb");
@@ -370,6 +386,8 @@ void ReadFileIntoMemoryAt(State8080* state, char* filename, uint32_t offset)
 	fread(buffer, fsize, 1, f);
 	fclose(f);
 }
+
+
 /*Outputs the parity of a given integer a, outputting 1 for even, 0 for odd*/
 uint8_t Parity(uint8_t a)
 {
@@ -381,6 +399,8 @@ uint8_t Parity(uint8_t a)
 	}
 	return (parity % 2 == 0);
 }
+
+
 /*Used if the program runs into an unimplemented instruction*/
 void UnimplementedInstruction(State8080* state)
 {
@@ -390,7 +410,10 @@ void UnimplementedInstruction(State8080* state)
 	exit(1);
 }
 
+/*---------------------------------------------------------------------------*/
+
 /*ARITHMETIC GROUP*/
+
 /*
 Adds the current state in register A, and the variable value (no carry)
 and stores in register A
@@ -403,9 +426,13 @@ void ADD(State8080 *state, uint8_t var)
 {
 	// store answer in temp variable (conserves carry)
 	uint16_t answer = (uint16_t)state->a + (uint16_t)var;
+
+	/*Condition Codes*/
 	Flags(state, answer);
 	state->a = answer & 0xff;
 }
+
+
 /*
 Adds the current state in register A and the variable value (with carry)
 and stores in register A
@@ -418,10 +445,13 @@ void ADC(State8080 *state, uint8_t var)
 {
 	// store answer in temp variable (conserves carry)
 	uint16_t answer = (uint16_t)state->a + (uint16_t)var + (uint16_t)state->cc.cy;
+
 	/*Condition Codes*/
 	Flags(state, answer);
 	state->a = answer & 0xff;
 }
+
+
 /*
 Subtracts the current state in register A and the variable value (no carry)
 and stores in register A
@@ -434,10 +464,13 @@ void SUB(State8080 *state, uint8_t var)
 {
 	// store answer in temp variable (conserves carry)
 	uint16_t answer = (uint16_t)state->a - (uint16_t)var;
+
 	/*Condition Codes*/
 	Flags(state, answer);
 	state->a = answer & 0xff;
 }
+
+
 /*
 Subtracts the current state in register A and the variable value (with carry)
 and stores in register A
@@ -446,14 +479,19 @@ and stores in register A
 @param var     the variable being added to the state
 
 */
+
+
 void SBB(State8080 *state, uint8_t var)
 {
 	// store answer in temp variable (conserves carry)
 	uint16_t answer = (uint16_t)state->a - (uint16_t)var - state->cc.cy;
+
 	/*Condition Codes*/
 	Flags(state, answer);
 	state->a = answer & 0xff;
 }
+
+
 /*
 Add 1 to the register pair
 Adds to the physical register
@@ -464,26 +502,32 @@ void INX(uint8_t *reg1, uint8_t *reg2)
 {
 	// add to the LSB first (second register C,E,L)
 	++(*reg2);
+
 	// if overflow occurs, increment MSB register (B,D,H)
 	if (*reg2 == 0)
 	{
 		++(*reg1);
 	}
 }
+
+
 /*
 Subtract 1 from the register
 @param reg the incoming register value
 */
 void DCX(uint8_t *reg1, uint8_t *reg2)
 {
-	// add to the LSB first (second register C,E,L)
+	// decrement the LSB first (second register C,E,L)
 	--(*reg2);
-	// if overflow occurs, increment MSB register (B,D,H)
+
+	// if carry needed, decrement MSB register (B,D,H)
 	if (*reg2 == 0xff)
 	{
 		--(*reg1);
 	}
 }
+
+
 /*
 Performs a 'double add'
 the 16 bit number in register pair added to that held in the HL registers
@@ -495,14 +539,19 @@ stored in HL registers
 void DAD(State8080 *state, uint32_t regP)
 {
 	uint32_t hl = (state->h << 8) | (state->l);
+
 	// store in temp answer to preserve carry
 	uint32_t answer = hl + regP;
+
 	// carry flag
 	state->cc.cy = ((answer & 0xffff0000) > 0);
+
 	// by using AND with all '1's, converts to 8-bit #
 	state->h = (answer & 0xff00) >> 8;
 	state->l = answer & 0xff;
 }
+
+
 /*
 Increments the specified register or memory byte by 1
 
@@ -513,17 +562,24 @@ void INR(State8080 *state, uint8_t* var)
 {
 	// store answer in temp variable (conserves carry)
 	uint16_t answer = (uint16_t)*var + 1;
+
 	/*Condition Codes*/
+
 	// zero flag  (sets to 1 when it is true)
 	state->cc.z = ((answer & 0xff) == 0);
+
 	// sign flag
 	// set to 1 if MSB is 1
 	state->cc.s = ((answer & 0x80) != 0);
+
 	// parity flag
 	state->cc.p = Parity(uint8_t(answer & 0xff));
+
 	// by using AND with all '1's, converts to 8-bit #
 	*var = answer & 0xff;
 }
+
+
 /*
 Decrements the specified register or memory byte by 1
 
@@ -534,14 +590,20 @@ void DCR(State8080 *state, uint8_t* var)
 {
 	// store answer in temp variable 
 	uint8_t answer = *var - 1;
+
 	/*Condition Codes*/
+
 	// zero flag  (sets to 1 when it is true)
 	state->cc.z = ((answer & 0xff) == 0);
+
 	// sign flag
+
 	// set to 1 if MSB is 1
 	state->cc.s = ((answer & 0x80) != 0);
+
 	// parity flag
 	state->cc.p = Parity(answer);
+
 	// by using AND with all '1's, converts to 8-bit #
 	*var = answer & 0xff;
 }
@@ -551,14 +613,21 @@ void Flags(State8080 *state, uint16_t res)
 {
 	// set to zero if answer is zero
 	state->cc.z = ((res & 0xff) == 0);
+
 	// sign flag
 	// set to 1 if MSB is 1
 	state->cc.s = ((res & 0x80) != 0);
+
 	// parity flag
 	state->cc.p = Parity(uint8_t(res & 0xff));
+
 	// carry flag
 	state->cc.cy = (res > 0xff);
 }
+
+
+
+/*---------------------------------------------------------------------------*/
 
 /*BRANCH GROUP*/
 
@@ -577,6 +646,8 @@ void CALL(State8080 *state, unsigned char *opcode)
 		state->sp = state->sp - 2;
 		state->pc = (opcode[2] << 8) | opcode[1];
 }
+
+
 /*
 Pops the last address saved on stack into pc,
 causing program transfer to that address
@@ -588,6 +659,9 @@ void RET(State8080 *state)
 	state->pc = state->memory[state->sp] | (state->memory[state->sp + 1] << 8);
 	state->sp += 2;
 }
+
+
+/*---------------------------------------------------------------------------*/
 
 /*LOGICAL GROUP*/
 
@@ -608,9 +682,12 @@ void ANA(State8080 *state, uint8_t var)
 	/*Condition Codes*/
 	Flags(state, answer);
 	state->cc.cy = 0;
+
 	// by using AND with all '1's, converts to 8-bit #
 	state->a = answer;
 }
+
+
 /*
 Performs the logical OR operation with the accumulator [A]
 pass in variable
@@ -624,12 +701,16 @@ void ORA(State8080 *state, uint8_t var)
 {
 	// store answer in temp variable
 	uint8_t answer = state->a | var;
+
 	/*Condition Codes*/
 	Flags(state, answer);
 	state->cc.cy = 0;
+
 	// by using AND with all '1's, converts to 8-bit #
 	state->a = answer;
 }
+
+
 /*
 Performs the logical XOR operation with the accumulator [A]
 pass in variable
@@ -643,11 +724,15 @@ void XRA(State8080 *state, uint8_t var)
 {
 	// store answer in temp variable
 	uint8_t answer = state->a ^ var;
+
 	/*Condition Codes*/
 	Flags(state, answer);
 	state->cc.cy = 0;
+
 	state->a = answer;
 }
+
+
 /*
 Performs a right bit shift of the accumulator
 effects the CY flag (stores LSB in it)
@@ -660,9 +745,12 @@ void RRC(State8080 *state)
 	// the shift right by 1 performs the shift without the LSB
 	// the shift left by 7 places the LSB in the 8th position
 	state->a = temp >> 1 | temp << 7;
+
 	// the carry bit takes on the value of the LSB (now the MSB)
 	state->cc.cy = 1 & temp;
 }
+
+
 /*
 Performs a left bit shift of the accumulator
 effects the CY flag (stores MSB in it)
@@ -673,14 +761,16 @@ void RLC(State8080 *state)
 {
 
 	uint8_t temp = state->a;
+
 	// the shift left by 1 performs the shift without the MSB
 	// the shift right by 7 places the MSB in the 0th position
 	state->a = temp << 1 | temp >> 7;
+
 	// the carry bit takes on the value of the LSB (the previous MSB)
 	state->cc.cy = 1 & state->a;
-
-
 }
+
+
 /*
 Performs a rotate right thru carry of the accumulator
 effects the CY flag (stores previous LSB)
@@ -690,12 +780,16 @@ effects the CY flag (stores previous LSB)
 void RAR(State8080 *state)
 {
 	uint8_t temp = state->a;
+
 	// the shift right by 1 performs the shift without the LSB
 	// the shift left by 7 places of the carry places it in the MSB
 	state->a = temp >> 1 | (state->cc.cy) << 7;
+
 	// the carry bit takes on the value of the previous LSB (stored in temp)
 	state->cc.cy = 1 & temp;
 }
+
+
 /*
 Performs a rotate left thru carry of the accumulator
 effects the CY flag (stores previous MSB)
@@ -706,14 +800,19 @@ void RAL(State8080 *state)
 {
 
 	uint8_t temp = state->a;
+
 	// get the MSB (shifted 7 so that it is in the correct position)
 	uint8_t MSB = (temp & 0x80) >> 7;
+
 	// the shift right by 1 performs the shift without the LSB
 	// the shift left by 7 places the LSB in the 8th position
 	state->a = temp << 1 | (state->cc.cy);
+
 	// the carry bit takes on the value of the LSB (previous MSB)
 	state->cc.cy = MSB;
 }
+
+
 /*
 Compares the current value in register A with an
 input variable
@@ -730,15 +829,19 @@ void CMP(State8080 *state, uint8_t var)
 {
 	// store answer in temp variable (conserves carry)
 	uint8_t answer = state->a - var;
+
 	/*Condition Codes*/
 	Flags(state, answer);
+
 	state->cc.cy = (state->a < var);
 	//NOTE: DOES NOT STORE ANSWER!
 }
 
-
+/*---------------------------------------------------------------------------*/
 
 /*STACK GROUP*/
+
+
 /*
 Performs a POP of the stack, storing it in register
 Works in reverse order, pointer increments when popping (Top of Stack is at SP)
@@ -755,9 +858,12 @@ void POP(State8080* state, uint8_t *regHigh, uint8_t *regLow)
 {
 	*regLow = state->memory[state->sp];
 	*regHigh = state->memory[state->sp + 1];
+
 	// move the pointer to be at the top of stack
 	state->sp += 2;
 }
+
+
 /*
 Performs a PUSH of the stack
 Works in reverse order, pointer decrements when popping (Top of Stack is at SP)
@@ -774,9 +880,12 @@ void PUSH(State8080* state, uint8_t regHigh, uint8_t regLow)
 {
 	state->memory[state->sp - 1] = regHigh;
 	state->memory[state->sp - 2] = regLow;
+
 	// move the pointer to be at the top of stack
 	state->sp -= 2;
 }
+
+
 /*
 Performs a POP of the stack, storing it in the Pop Processor Status Word
 Stores individual bits in the flag and in A
@@ -791,12 +900,16 @@ void POP_PSW(State8080 *state)
 
 	// carry flag (CY) <- ((SP))_0 
 	state->cc.cy = ((PSW & 0x1) != 0);
+
 	// parity flag (P) <- ((SP))_2
 	state->cc.p = ((PSW & 0x4) != 0);
+
 	// auxilary flag (AC) <- ((SP))_4
 	state->cc.ac = ((PSW & 0x10) != 0);
+
 	// zero flag (Z) <- ((SP))_6
 	state->cc.z = ((PSW & 0x40) != 0);
+
 	// sign flag (S) <- ((SP))_7
 	state->cc.s = ((PSW & 0x80) != 0);
 
@@ -804,6 +917,8 @@ void POP_PSW(State8080 *state)
 	state->sp += 2;
 
 }
+
+
 /*
 Performs a PUSH of the stack, addning the flag values as a word in the stack
 @param state   gives access to the state structure
@@ -811,6 +926,7 @@ Performs a PUSH of the stack, addning the flag values as a word in the stack
 void PUSH_PSW(State8080 *state)
 {
 	state->memory[state->sp - 1] = state->a;
+
 	uint8_t PSW = state->cc.cy | // in 0th pos
 		2 |
 		(state->cc.p << 2) | // in 2nd pos
@@ -820,8 +936,11 @@ void PUSH_PSW(State8080 *state)
 		0; 
 
 	state->memory[state->sp - 2] = PSW;
+
 	state->sp -= 2;
 }
+
+
 /*
 moves contents of HL to SP
 @param state   gives access to the state structure
@@ -830,8 +949,9 @@ void SPHL(State8080* state)
 {
 	// gets new address in the form of hl
 	state->sp = (state->h << 8) | (state->l);
-
 }
+
+
 /*
 exchanges stack top with HL
 @param state   gives access to the state structure
@@ -841,6 +961,7 @@ void XTHL(State8080* state)
 	// store L and H in temporary variables
 	uint8_t tempL = state->l;
 	uint8_t tempH = state->h;
+
 	//Perform the exchange
 	state->l = state->memory[state->sp];
 	state->h = state->memory[state->sp + 1];
@@ -848,6 +969,8 @@ void XTHL(State8080* state)
 	state->memory[state->sp] = tempL;
 	state->memory[state->sp + 1] = tempH;
 }
+
+
 /*
 exchanges reg l with reg e
 exhanges reg h with reg d
@@ -858,6 +981,7 @@ void XCHG(State8080* state)
 	// store L and H in temporary variables
 	uint8_t tempL = state->l;
 	uint8_t tempH = state->h;
+
 	//Perform the exchange
 	state->l = state->e;
 	state->h = state->d;

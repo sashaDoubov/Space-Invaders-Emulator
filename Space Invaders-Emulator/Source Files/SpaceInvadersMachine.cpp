@@ -3,9 +3,7 @@
 #include "..\Header Files\Opcodes.h"
 #include "..\Header Files\emuProcessor.h"
 #include "SDL.h"
-
 #include <chrono>
-#include <cstdint>
 
 
 /*
@@ -22,6 +20,9 @@ SpaceInvadersMachine::SpaceInvadersMachine(void)
 	whichInterrupt = 1; //going to be the first interrupt
 }
 
+
+
+
 /*
 returns the running time of the space invaders machine
 since running time, in microseconds.
@@ -33,8 +34,11 @@ double SpaceInvadersMachine::time(void)
 }
 
 
+
+
 /* 
-This code was heavily influenced by the Emulator 101 code
+Emulates the CPU timing and operations
+Generates interrupts at necessary time intervals 
 */
 void SpaceInvadersMachine::doCPU(void)
 {
@@ -78,6 +82,7 @@ void SpaceInvadersMachine::doCPU(void)
 	{
 		unsigned char *op;
 		op = &state->memory[state->pc];
+
 		if (*op == 0xdb) //machine specific handling for IN
 		{
 			uint8_t port = op[1];
@@ -102,6 +107,7 @@ void SpaceInvadersMachine::doCPU(void)
 }
 
 
+
 /*Used to generate an interrupt
 keeps track of pc and changes it to a low-level address
 
@@ -117,6 +123,8 @@ void SpaceInvadersMachine::generateInterrupt(State8080 * state, int interrupt_nu
 	state->pc = 8 * interrupt_num;
 	state->int_enable = 0;
 }
+
+
 /*
 Emulates input port
 */
@@ -138,6 +146,7 @@ uint8_t SpaceInvadersMachine::MachineIN(State8080 * state, uint8_t port)
 }
 
 
+
 /*
 Emulates output port
 */
@@ -155,6 +164,7 @@ void SpaceInvadersMachine::MachineOUT(State8080 * state, uint8_t port,uint8_t va
 	}
 }
 
+
 /*
 Corresponds to key press down
 changes the corresponding bit in the program to a 1
@@ -164,47 +174,56 @@ void SpaceInvadersMachine::keyDown(SDL_Keycode key)
 {
 	switch (key) {
 
+
 	/*PORT 1*/
+
 	// LEFT (1 player)
 	case SDLK_LEFT:
 		inPort1 |= 0x20;
 		break;
+
 	// RIGHT (1 player)
 	case SDLK_RIGHT:
 		inPort1 |= 0x40;
 		break;
+
 	// SHOOT (1 player)
 	case SDLK_SPACE:
 		inPort1 |= 0x10;
 		break;
+
 	// START (1 player)
 	case SDLK_1:
 		inPort1 |= 0x04;
 		break;
+
 	// START (2 player)
 	case SDLK_2:
 		inPort1 |= 0x02;
 		break;
+
 	// INSERT COIN
 	case SDLK_c:
 		inPort1 |= 0x1;
 		break;
 
+
 	/*PORT 2*/
+
 	// LEFT (2 player)
 	case SDLK_a:
 		inPort2 |= 0x20;
 		break;
+
 	// RIGHT (2 player)
 	case SDLK_d:
 		inPort2 |= 0x40;
 		break;
+
 	// SHOOT (2 player)
 	case SDLK_w:
 		inPort2 |= 0x10;
 		break;
-	
-
 	}
 }
 
@@ -216,40 +235,53 @@ More information can be found in webpage Space Invaders Archeology
 void SpaceInvadersMachine::keyUp(SDL_Keycode key)
 {
 	switch (key) {
+
+
+		/*Port 1*/
+
 		// LEFT (1 player)
 		case SDLK_LEFT:
 			inPort1 &= ~0x20;
 			break;
+
 		// RIGHT (1 player)
 		case SDLK_RIGHT:
 			inPort1 &= ~0x40;
 			break;
+
 		// SHOOT (1 player)
 		case SDLK_SPACE:
 			inPort1 &= ~0x10;
 			break;
+
 		// START (1 player)
 		case SDLK_1:
 			inPort1 &= ~0x04;
 			break;
+
 		// START (2 player)
 		case SDLK_2:
 			inPort1 &= ~0x02;
 			break;
+
 		// INSERT COIN
 		case SDLK_c:
 			inPort1 &= ~0x1;
 			break;
 
+
 		/*PORT 2*/
+
 		// LEFT (2 player)
 		case SDLK_a:
 			inPort2 &= ~0x20;
 			break;
+
 		// RIGHT (2 player)
 		case SDLK_d:
 			inPort2 &= ~0x40;
 			break;
+
 		// SHOOT (2 player)
 		case SDLK_w:
 			inPort2 &= ~0x10;
