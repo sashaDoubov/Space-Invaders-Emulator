@@ -11,7 +11,7 @@ Obtain your own ROM files and paste them into the ROM folder.
 // Due to the gray legal area in which emulators reside in
 
 
-(runs in Debug x64 mode)
+(runs in x64 modes)
 
 ###Controls:
 
