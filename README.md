@@ -1,6 +1,4 @@
-========================================================================
-Space Invaders Emulator
-========================================================================
+# Space Invaders Emulator
 
 This project emulates the Intel 8080 processor and uses SDL2 graphics, 
 to play Space Invaders with the original ROM files!
